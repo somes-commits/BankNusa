@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>NusaBank — Login</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --ink: #0d0f14;
+      --gold: #c9a84c;
+      --gold-light: #e8c96a;
+      --cream: #f5f0e8;
+      --surface: #161b27;
+      --surface2: #1e2535;
+      --muted: #6b7491;
+      --danger: #e05c5c;
+      --success: #4caf80;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--ink);
+      color: var(--cream);
+      min-height: 100vh;
+      display: flex;
+      overflow: hidden;
+    }
+
+    /* Left panel – decorative */
+    .left-panel {
+      flex: 1;
+      position: relative;
+      background: linear-gradient(135deg, #0a0d14 0%, #111827 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .left-panel::before {
+      content: '';
+      position: absolute;
+      width: 600px; height: 600px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(201,168,76,0.12) 0%, transparent 70%);
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      animation: pulse 4s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: translate(-50%,-50%) scale(1); opacity: 0.8; }
+      50% { transform: translate(-50%,-50%) scale(1.15); opacity: 1; }
+    }
+
+    .left-content {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      padding: 40px;
+    }
+
+    .brand-logo {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 52px;
+      font-weight: 300;
+      letter-spacing: 8px;
+      color: var(--cream);
+      margin-bottom: 8px;
+    }
+
+    .brand-logo span {
+      color: var(--gold);
+    }
+
+    .brand-tagline {
+      font-size: 13px;
+      letter-spacing: 3px;
+      color: var(--muted);
+      text-transform: uppercase;
+      margin-bottom: 60px;
+    }
+
+    .decorative-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 80px);
+      gap: 16px;
+      justify-content: center;
+      opacity: 0.4;
+    }
+
+    .grid-item {
+      height: 80px;
+      border: 1px solid rgba(201,168,76,0.3);
+      border-radius: 8px;
+      animation: float 3s ease-in-out infinite;
+    }
+
+    .grid-item:nth-child(2) { animation-delay: 0.5s; }
+    .grid-item:nth-child(3) { animation-delay: 1s; }
+    .grid-item:nth-child(4) { animation-delay: 1.5s; }
+    .grid-item:nth-child(5) { animation-delay: 0.3s; background: rgba(201,168,76,0.05); }
+    .grid-item:nth-child(6) { animation-delay: 0.8s; }
+    .grid-item:nth-child(7) { animation-delay: 1.2s; }
+    .grid-item:nth-child(8) { animation-delay: 0.6s; background: rgba(201,168,76,0.08); }
+    .grid-item:nth-child(9) { animation-delay: 1.8s; }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-6px); }
+    }
+
+    .features {
+      margin-top: 60px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .feature-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .feature-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--gold);
+      flex-shrink: 0;
+    }
+
+    /* Right panel – form */
+    .right-panel {
+      width: 480px;
+      background: var(--surface);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 60px 48px;
+      position: relative;
+    }
+
+    .right-panel::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 1px; height: 100%;
+      background: linear-gradient(to bottom, transparent, rgba(201,168,76,0.4), transparent);
+    }
+
+    .form-container {
+      width: 100%;
+    }
+
+    .form-header {
+      margin-bottom: 40px;
+    }
+
+    .form-eyebrow {
+      font-size: 11px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 12px;
+    }
+
+    .form-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 38px;
+      font-weight: 300;
+      line-height: 1.2;
+      margin-bottom: 10px;
+    }
+
+    .form-subtitle {
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    /* Tab switcher */
+    .tab-group {
+      display: flex;
+      background: var(--surface2);
+      border-radius: 10px;
+      padding: 4px;
+      margin-bottom: 32px;
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 10px;
+      background: transparent;
+      border: none;
+      color: var(--muted);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      cursor: pointer;
+      border-radius: 7px;
+      transition: all 0.25s;
+    }
+
+    .tab-btn.active {
+      background: var(--gold);
+      color: var(--ink);
+      font-weight: 500;
+    }
+
+    /* Form fields */
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      font-size: 12px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    input {
+      width: 100%;
+      padding: 14px 16px;
+      background: var(--surface2);
+      border: 1px solid transparent;
+      border-radius: 10px;
+      color: var(--cream);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px;
+      transition: all 0.25s;
+      outline: none;
+    }
+
+    input:focus {
+      border-color: rgba(201,168,76,0.5);
+      background: rgba(30, 37, 53, 0.8);
+      box-shadow: 0 0 0 3px rgba(201,168,76,0.08);
+    }
+
+    input::placeholder { color: #3d4560; }
+
+    .btn-primary {
+      width: 100%;
+      padding: 15px;
+      background: var(--gold);
+      color: var(--ink);
+      border: none;
+      border-radius: 10px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px;
+      font-weight: 500;
+      letter-spacing: 0.5px;
+      cursor: pointer;
+      transition: all 0.25s;
+      margin-top: 8px;
+    }
+
+    .btn-primary:hover {
+      background: var(--gold-light);
+      transform: translateY(-1px);
+      box-shadow: 0 8px 24px rgba(201,168,76,0.25);
+    }
+
+    .btn-primary:active { transform: translateY(0); }
+
+    .btn-primary:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* Alert */
+    .alert {
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      margin-bottom: 20px;
+      display: none;
+    }
+
+    .alert.error {
+      background: rgba(224,92,92,0.12);
+      border: 1px solid rgba(224,92,92,0.3);
+      color: #f08080;
+      display: block;
+    }
+
+    .alert.success {
+      background: rgba(76,175,128,0.12);
+      border: 1px solid rgba(76,175,128,0.3);
+      color: #6dd4a0;
+      display: block;
+    }
+
+    /* Demo accounts */
+    .demo-accounts {
+      margin-top: 28px;
+      padding-top: 24px;
+      border-top: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .demo-label {
+      font-size: 11px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 12px;
+    }
+
+    .demo-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .demo-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 12px;
+      background: var(--surface2);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: 1px solid transparent;
+    }
+
+    .demo-item:hover {
+      border-color: rgba(201,168,76,0.3);
+      background: rgba(30,37,53,0.8);
+    }
+
+    .demo-info { font-size: 13px; }
+    .demo-name { color: var(--cream); font-weight: 500; }
+    .demo-email { color: var(--muted); font-size: 12px; margin-top: 2px; }
+    .demo-pass {
+      font-size: 11px;
+      color: var(--gold);
+      background: rgba(201,168,76,0.1);
+      padding: 3px 8px;
+      border-radius: 4px;
+    }
+
+    /* Tab content */
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    @media (max-width: 768px) {
+      .left-panel { display: none; }
+      .right-panel { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Left Decorative Panel -->
+<div class="left-panel">
+  <div class="left-content">
+    <div class="brand-logo">NUSA<span>BANK</span></div>
+    <div class="brand-tagline">Digital Banking Platform</div>
+
+    <div class="decorative-grid">
+      <div class="grid-item"></div>
+      <div class="grid-item"></div>
+      <div class="grid-item"></div>
+      <div class="grid-item"></div>
+      <div class="grid-item"></div>
+      <div class="grid-item"></div>
+      <div class="grid-item"></div>
+      <div class="grid-item"></div>
+      <div class="grid-item"></div>
+    </div>
+
+    <div class="features">
+      <div class="feature-item"><div class="feature-dot"></div>Transfer antar rekening real-time</div>
+      <div class="feature-item"><div class="feature-dot"></div>Pantau saldo & riwayat transaksi</div>
+      <div class="feature-item"><div class="feature-dot"></div>Keamanan data terenkripsi</div>
+    </div>
+  </div>
+</div>
+
+<!-- Right Form Panel -->
+<div class="right-panel">
+  <div class="form-container">
+    <div class="form-header">
+      <div class="form-eyebrow">Selamat Datang</div>
+      <div class="form-title">Masuk ke Akun<br/>Anda</div>
+      <div class="form-subtitle">Akses layanan perbankan digital Anda</div>
+    </div>
+
+    <!-- Tab Switcher -->
+    <div class="tab-group">
+      <button class="tab-btn active" onclick="switchTab('login')">Masuk</button>
+      <button class="tab-btn" onclick="switchTab('register')">Daftar</button>
+    </div>
+
+    <!-- Alert -->
+    <div id="alert-box" class="alert"></div>
+
+    <!-- Login Form -->
+    <div id="tab-login" class="tab-content active">
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="login-email" placeholder="nama@email.com"/>
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="login-password" placeholder="••••••••"
+               onkeydown="if(event.key==='Enter') doLogin()"/>
+      </div>
+      <button class="btn-primary" id="btn-login" onclick="doLogin()">Masuk</button>
+
+      <!-- Demo Accounts -->
+      <div class="demo-accounts">
+        <div class="demo-label">Akun Demo</div>
+        <div class="demo-list">
+          <div class="demo-item" onclick="fillDemo('budi@email.com','budi123')">
+            <div class="demo-info">
+              <div class="demo-name">Budi Santoso</div>
+              <div class="demo-email">budi@email.com</div>
+            </div>
+            <span class="demo-pass">budi123</span>
+          </div>
+          <div class="demo-item" onclick="fillDemo('siti@email.com','siti123')">
+            <div class="demo-info">
+              <div class="demo-name">Siti Rahayu</div>
+              <div class="demo-email">siti@email.com</div>
+            </div>
+            <span class="demo-pass">siti123</span>
+          </div>
+          <div class="demo-item" onclick="fillDemo('ahmad@email.com','ahmad123')">
+            <div class="demo-info">
+              <div class="demo-name">Ahmad Fauzi</div>
+              <div class="demo-email">ahmad@email.com</div>
+            </div>
+            <span class="demo-pass">ahmad123</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Register Form -->
+    <div id="tab-register" class="tab-content">
+      <div class="form-group">
+        <label>Nama Lengkap</label>
+        <input type="text" id="reg-nama" placeholder="Nama lengkap Anda"/>
+      </div>
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="reg-email" placeholder="nama@email.com"/>
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="reg-password" placeholder="Minimal 6 karakter"
+               onkeydown="if(event.key==='Enter') doRegister()"/>
+      </div>
+      <button class="btn-primary" id="btn-register" onclick="doRegister()">Buat Akun</button>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  function switchTab(tab) {
+    document.querySelectorAll('.tab-btn').forEach((b,i) => b.classList.toggle('active', (i===0 && tab==='login')||(i===1 && tab==='register')));
+    document.getElementById('tab-login').classList.toggle('active', tab === 'login');
+    document.getElementById('tab-register').classList.toggle('active', tab === 'register');
+    clearAlert();
+  }
+
+  function showAlert(msg, type) {
+    const el = document.getElementById('alert-box');
+    el.textContent = msg;
+    el.className = 'alert ' + type;
+  }
+
+  function clearAlert() {
+    const el = document.getElementById('alert-box');
+    el.className = 'alert';
+  }
+
+  function fillDemo(email, pass) {
+    document.getElementById('login-email').value = email;
+    document.getElementById('login-password').value = pass;
+    clearAlert();
+  }
+
+  async function doLogin() {
+    const email = document.getElementById('login-email').value.trim();
+    const password = document.getElementById('login-password').value;
+    const btn = document.getElementById('btn-login');
+
+    if (!email || !password) { showAlert('Email dan password wajib diisi', 'error'); return; }
+
+    btn.disabled = true;
+    btn.textContent = 'Memproses...';
+
+    try {
+      const res = await fetch('/api/login', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ email, password })
+      });
+      const data = await res.json();
+
+      if (data.success) {
+        showAlert('Login berhasil! Mengalihkan...', 'success');
+        setTimeout(() => window.location.href = '/dashboard', 800);
+      } else {
+        showAlert(data.message, 'error');
+        btn.disabled = false;
+        btn.textContent = 'Masuk';
+      }
+    } catch(e) {
+      showAlert('Koneksi gagal. Coba lagi.', 'error');
+      btn.disabled = false;
+      btn.textContent = 'Masuk';
+    }
+  }
+
+  async function doRegister() {
+    const nama = document.getElementById('reg-nama').value.trim();
+    const email = document.getElementById('reg-email').value.trim();
+    const password = document.getElementById('reg-password').value;
+    const btn = document.getElementById('btn-register');
+
+    if (!nama || !email || !password) { showAlert('Semua field wajib diisi', 'error'); return; }
+    if (password.length < 6) { showAlert('Password minimal 6 karakter', 'error'); return; }
+
+    btn.disabled = true;
+    btn.textContent = 'Mendaftar...';
+
+    try {
+      const res = await fetch('/api/register', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ nama, email, password })
+      });
+      const data = await res.json();
+
+      if (data.success) {
+        showAlert(data.message + ' Silakan login.', 'success');
+        setTimeout(() => switchTab('login'), 1500);
+      } else {
+        showAlert(data.message, 'error');
+      }
+    } catch(e) {
+      showAlert('Koneksi gagal. Coba lagi.', 'error');
+    }
+
+    btn.disabled = false;
+    btn.textContent = 'Buat Akun';
+  }
+</script>
+</body>
+</html>
