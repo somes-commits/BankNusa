@@ -571,6 +571,96 @@
     .btn-confirm:hover { background: var(--gold-light); }
     .btn-confirm:disabled { opacity: 0.5; cursor: not-allowed; }
 
+    /* ── DELETE / DANGER ── */
+    .btn-delete-trx {
+      background: transparent;
+      border: none;
+      color: transparent;
+      font-size: 14px;
+      cursor: pointer;
+      padding: 6px 8px;
+      border-radius: 6px;
+      transition: all 0.2s;
+      flex-shrink: 0;
+      line-height: 1;
+    }
+
+    .trx-item:hover .btn-delete-trx {
+      color: var(--muted);
+    }
+
+    .btn-delete-trx:hover {
+      color: var(--danger) !important;
+      background: rgba(224,92,92,0.1);
+    }
+
+    .btn-danger {
+      width: 100%;
+      padding: 13px;
+      background: transparent;
+      border: 1px solid rgba(224,92,92,0.4);
+      border-radius: 10px;
+      color: var(--danger);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.25s;
+    }
+
+    .btn-danger:hover {
+      background: rgba(224,92,92,0.1);
+      border-color: var(--danger);
+    }
+
+    .btn-confirm-danger {
+      flex: 1;
+      padding: 13px;
+      background: var(--danger);
+      border: none;
+      border-radius: 10px;
+      color: #fff;
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+
+    .btn-confirm-danger:hover { background: #c94444; }
+    .btn-confirm-danger:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .warning-box {
+      background: rgba(224,92,92,0.07);
+      border: 1px solid rgba(224,92,92,0.25);
+      border-radius: 10px;
+      padding: 14px 16px;
+      font-size: 13px;
+      color: #e89090;
+      margin-bottom: 20px;
+      line-height: 1.6;
+    }
+
+    .settings-row {
+      padding: 20px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .settings-row:last-child { border-bottom: none; }
+
+    .settings-row-title {
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 4px;
+    }
+
+    .settings-row-desc {
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 14px;
+      line-height: 1.5;
+    }
+
     /* Loading skeleton */
     .skeleton {
       background: linear-gradient(90deg, var(--surface2) 25%, var(--surface3) 50%, var(--surface2) 75%);
@@ -604,6 +694,9 @@
     </div>
     <div class="nav-item" onclick="showSection('history')">
       <span class="nav-icon">☰</span> Riwayat
+    </div>
+    <div class="nav-item" onclick="showSection('settings')">
+      <span class="nav-icon">⚙</span> Pengaturan
     </div>
   </nav>
 
@@ -755,6 +848,58 @@
     </div>
   </section>
 
+  <!-- ── SETTINGS ── -->
+  <section id="section-settings" style="display:none">
+    <div class="page-header">
+      <div class="page-title">Pengaturan</div>
+      <div class="page-subtitle">Kelola akun dan preferensi Anda</div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+      <!-- Profil Info -->
+      <div class="section-card">
+        <div class="section-title">Informasi Akun</div>
+        <div class="settings-row">
+          <div class="settings-row-title">Nama Lengkap</div>
+          <div class="settings-row-desc" id="settings-nama">—</div>
+        </div>
+        <div class="settings-row">
+          <div class="settings-row-title">Alamat Email</div>
+          <div class="settings-row-desc" id="settings-email">—</div>
+        </div>
+        <div class="settings-row">
+          <div class="settings-row-title">No. Rekening</div>
+          <div class="settings-row-desc" id="settings-rekening">—</div>
+        </div>
+        <div class="settings-row">
+          <div class="settings-row-title">Bergabung Sejak</div>
+          <div class="settings-row-desc" id="settings-joined">—</div>
+        </div>
+      </div>
+
+      <!-- Danger Zone -->
+      <div class="section-card">
+        <div class="section-title" style="color: var(--danger);">Zona Berbahaya</div>
+
+        <div class="settings-row">
+          <div class="settings-row-title">Hapus Semua Riwayat Transaksi</div>
+          <div class="settings-row-desc">Menghapus seluruh catatan riwayat transaksi Anda secara permanen. Saldo tidak terpengaruh.</div>
+          <button class="btn-danger" onclick="openHapusSemua()">
+            🗑 Hapus Semua Riwayat
+          </button>
+        </div>
+
+        <div class="settings-row">
+          <div class="settings-row-title">Tutup Rekening</div>
+          <div class="settings-row-desc">Menutup rekening Anda secara permanen. Pastikan saldo sudah Rp 0 sebelum melanjutkan. Tindakan ini tidak dapat dibatalkan.</div>
+          <button class="btn-danger" onclick="openTutupRekening()">
+            ✕ Tutup Rekening Saya
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
 </main>
 
 <!-- Transfer Confirmation Modal -->
@@ -791,6 +936,82 @@
 
 <!-- Toast -->
 <div class="toast" id="toast"></div>
+
+<!-- Modal: Hapus Transaksi -->
+<div class="modal-overlay" id="hapus-trx-modal">
+  <div class="modal">
+    <div class="modal-title">Hapus Riwayat</div>
+    <div class="modal-subtitle">Transaksi ini akan dihapus dari riwayat Anda</div>
+    <div class="warning-box">
+      ⚠ Tindakan ini <strong>tidak dapat dibatalkan</strong>. Catatan transaksi akan hilang secara permanen, namun saldo tidak akan berubah.
+    </div>
+    <div class="confirm-row">
+      <span>Keterangan</span>
+      <span id="del-trx-ket">—</span>
+    </div>
+    <div class="confirm-row">
+      <span>Jumlah</span>
+      <span id="del-trx-jumlah">—</span>
+    </div>
+    <div class="confirm-row">
+      <span>Tanggal</span>
+      <span id="del-trx-date">—</span>
+    </div>
+    <input type="hidden" id="del-trx-id"/>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal('hapus-trx-modal')">Batal</button>
+      <button class="btn-confirm-danger" id="btn-confirm-del-trx" onclick="doHapusTransaksi()">
+        Hapus
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Hapus Semua Transaksi -->
+<div class="modal-overlay" id="hapus-semua-modal">
+  <div class="modal">
+    <div class="modal-title">Hapus Semua Riwayat</div>
+    <div class="modal-subtitle">Konfirmasi penghapusan semua riwayat transaksi</div>
+    <div class="warning-box">
+      ⚠ Seluruh riwayat transaksi Anda akan <strong>dihapus secara permanen</strong>. Saldo Anda tidak akan berubah. Tindakan ini tidak dapat dibatalkan.
+    </div>
+    <div class="form-group" style="margin-bottom: 0;">
+      <label>Masukkan Password untuk Konfirmasi</label>
+      <input type="password" class="form-input" id="hapus-semua-pwd" placeholder="Password Anda"/>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal('hapus-semua-modal')">Batal</button>
+      <button class="btn-confirm-danger" id="btn-confirm-hapus-semua" onclick="doHapusSemua()">
+        Hapus Semua
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Tutup Rekening -->
+<div class="modal-overlay" id="tutup-rekening-modal">
+  <div class="modal">
+    <div class="modal-title" style="color: var(--danger);">Tutup Rekening</div>
+    <div class="modal-subtitle">Rekening Anda akan ditutup secara permanen</div>
+    <div class="warning-box">
+      ⚠ <strong>Peringatan keras:</strong> Semua data akun dan riwayat transaksi akan dihapus. Anda tidak akan bisa login kembali. Pastikan saldo Anda sudah <strong>Rp 0</strong> sebelum melanjutkan.
+    </div>
+    <div class="confirm-row">
+      <span>Saldo Saat Ini</span>
+      <span id="tutup-saldo-info">—</span>
+    </div>
+    <div class="form-group" style="margin-top: 16px; margin-bottom: 0;">
+      <label>Masukkan Password untuk Konfirmasi</label>
+      <input type="password" class="form-input" id="tutup-pwd" placeholder="Password Anda"/>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal('tutup-rekening-modal')">Batal</button>
+      <button class="btn-confirm-danger" id="btn-confirm-tutup" onclick="doTutupRekening()">
+        Tutup Rekening
+      </button>
+    </div>
+  </div>
+</div>
 
 <script>
   let userData = null;
@@ -865,6 +1086,7 @@
 
   function renderTrxList(containerId, list) {
     const el = document.getElementById(containerId);
+    const isHistory = containerId === 'history-trx-list';
     if (!list.length) {
       el.innerHTML = `<div class="empty-state"><div class="empty-icon">📋</div>Belum ada transaksi</div>`;
       return;
@@ -879,8 +1101,12 @@
         hour: '2-digit', minute: '2-digit'
       });
 
+      const deleteBtn = isHistory
+        ? `<button class="btn-delete-trx" onclick="openHapusTransaksi('${t.id}','${(t.keterangan||'').replace(/'/g,"\\'")}','${t.jumlah_fmt}','${dateStr}')" title="Hapus transaksi ini">🗑</button>`
+        : '';
+
       return `
-        <div class="trx-item">
+        <div class="trx-item" id="trx-${t.id}">
           <div class="trx-icon ${t.tipe}">${icon}</div>
           <div class="trx-info">
             <div class="trx-name">${t.keterangan || (isDebit ? 'Transfer Keluar' : 'Transfer Masuk')}</div>
@@ -890,6 +1116,7 @@
             <div class="trx-val ${t.tipe}">${prefix}${t.jumlah_fmt}</div>
             <div class="trx-bal">${t.saldo_sesudah_fmt}</div>
           </div>
+          ${deleteBtn}
         </div>
       `;
     }).join('');
@@ -897,14 +1124,15 @@
 
   // ── NAVIGATION ──
   function showSection(name) {
-    ['overview', 'transfer', 'history'].forEach(s => {
+    ['overview', 'transfer', 'history', 'settings'].forEach(s => {
       document.getElementById(`section-${s}`).style.display = s === name ? 'block' : 'none';
     });
     document.querySelectorAll('.nav-item').forEach((el, i) => {
-      el.classList.toggle('active', ['overview','transfer','history'][i] === name);
+      el.classList.toggle('active', ['overview','transfer','history','settings'][i] === name);
     });
     if (name === 'history') loadTransactions();
     if (name === 'overview') { loadProfile(); loadStats(); loadTransactions(); }
+    if (name === 'settings') loadSettings();
   }
 
   // ── REKENING CHECK ──
@@ -995,9 +1223,10 @@
     document.getElementById('transfer-modal').classList.add('open');
   }
 
-  function closeModal() {
-    document.getElementById('transfer-modal').classList.remove('open');
+  function closeModal(id) {
+    document.getElementById(id || 'transfer-modal').classList.remove('open');
   }
+
 
   async function doTransfer() {
     const btn = document.getElementById('btn-confirm');
@@ -1046,6 +1275,147 @@
     await fetch('/api/logout', { method: 'POST' });
     window.location.href = '/';
   }
+
+  // ── SETTINGS ──
+  function loadSettings() {
+    if (!userData) return;
+    document.getElementById('settings-nama').textContent = userData.nama;
+    document.getElementById('settings-email').textContent = userData.email;
+    document.getElementById('settings-rekening').textContent = userData.no_rekening;
+    const joined = new Date(userData.created_at).toLocaleDateString('id-ID', {
+      day: 'numeric', month: 'long', year: 'numeric'
+    });
+    document.getElementById('settings-joined').textContent = joined;
+  }
+
+  // ── HAPUS SATU TRANSAKSI ──
+  function openHapusTransaksi(id, ket, jumlah, date) {
+    document.getElementById('del-trx-id').value = id;
+    document.getElementById('del-trx-ket').textContent = ket || 'Transfer';
+    document.getElementById('del-trx-jumlah').textContent = jumlah;
+    document.getElementById('del-trx-date').textContent = date;
+    document.getElementById('hapus-trx-modal').classList.add('open');
+  }
+
+  async function doHapusTransaksi() {
+    const id = document.getElementById('del-trx-id').value;
+    const btn = document.getElementById('btn-confirm-del-trx');
+    btn.disabled = true;
+    btn.textContent = 'Menghapus...';
+
+    try {
+      const res = await fetch(`/api/transaksi/${id}`, { method: 'DELETE' });
+      const data = await res.json();
+      closeModal('hapus-trx-modal');
+
+      if (data.success) {
+        // Hapus item dari DOM tanpa reload
+        const el = document.getElementById(`trx-${id}`);
+        if (el) {
+          el.style.transition = 'opacity 0.3s, transform 0.3s';
+          el.style.opacity = '0';
+          el.style.transform = 'translateX(20px)';
+          setTimeout(() => el.remove(), 300);
+        }
+        showToast('✓ Riwayat transaksi dihapus', 'success');
+        await loadStats();
+      } else {
+        showToast(data.message, 'error');
+      }
+    } catch(e) {
+      closeModal('hapus-trx-modal');
+      showToast('Koneksi gagal', 'error');
+    }
+
+    btn.disabled = false;
+    btn.textContent = 'Hapus';
+  }
+
+  // ── HAPUS SEMUA TRANSAKSI ──
+  function openHapusSemua() {
+    document.getElementById('hapus-semua-pwd').value = '';
+    document.getElementById('hapus-semua-modal').classList.add('open');
+  }
+
+  async function doHapusSemua() {
+    const pwd = document.getElementById('hapus-semua-pwd').value;
+    if (!pwd) { showToast('Password wajib diisi', 'error'); return; }
+
+    const btn = document.getElementById('btn-confirm-hapus-semua');
+    btn.disabled = true;
+    btn.textContent = 'Menghapus...';
+
+    try {
+      const res = await fetch('/api/transaksi/semua', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password: pwd })
+      });
+      const data = await res.json();
+      closeModal('hapus-semua-modal');
+
+      if (data.success) {
+        showToast('✓ Semua riwayat transaksi dihapus', 'success');
+        await loadTransactions();
+        await loadStats();
+      } else {
+        showToast(data.message, 'error');
+      }
+    } catch(e) {
+      closeModal('hapus-semua-modal');
+      showToast('Koneksi gagal', 'error');
+    }
+
+    btn.disabled = false;
+    btn.textContent = 'Hapus Semua';
+  }
+
+  // ── TUTUP REKENING ──
+  function openTutupRekening() {
+    document.getElementById('tutup-pwd').value = '';
+    document.getElementById('tutup-saldo-info').textContent =
+      userData ? userData.saldo_fmt : '—';
+    document.getElementById('tutup-rekening-modal').classList.add('open');
+  }
+
+  async function doTutupRekening() {
+    const pwd = document.getElementById('tutup-pwd').value;
+    if (!pwd) { showToast('Password wajib diisi', 'error'); return; }
+
+    const btn = document.getElementById('btn-confirm-tutup');
+    btn.disabled = true;
+    btn.textContent = 'Memproses...';
+
+    try {
+      const res = await fetch('/api/akun', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password: pwd })
+      });
+      const data = await res.json();
+
+      if (data.success) {
+        closeModal('tutup-rekening-modal');
+        showToast('Rekening ditutup. Sampai jumpa!', 'success');
+        setTimeout(() => { window.location.href = '/'; }, 2000);
+      } else {
+        btn.disabled = false;
+        btn.textContent = 'Tutup Rekening';
+        closeModal('tutup-rekening-modal');
+        showToast(data.message, 'error');
+      }
+    } catch(e) {
+      closeModal('tutup-rekening-modal');
+      showToast('Koneksi gagal', 'error');
+      btn.disabled = false;
+      btn.textContent = 'Tutup Rekening';
+    }
+  }
+
+  function closeModal(id) {
+    document.getElementById(id || 'transfer-modal').classList.remove('open');
+  }
+
 
   // ── UTILS ──
   function fmtRp(n) {

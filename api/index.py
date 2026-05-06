@@ -490,6 +490,170 @@ def api_cari_rekening(no_rek):
     return jsonify({"success": True, "nama": user["nama"], "no_rekening": user["no_rekening"]})
 
 # ─────────────────────────────────────────────
+# DELETE API — HAPUS SEMUA TRANSAKSI USER
+# ─────────────────────────────────────────────
+
+@app.route("/api/transaksi/semua", methods=["DELETE"])
+@login_required
+def api_hapus_semua_transaksi():
+    """
+    DELETE /api/transaksi/semua
+    Hapus seluruh riwayat transaksi milik user yang sedang login.
+    Membutuhkan konfirmasi password. Saldo tidak berubah.
+    """
+    data     = request.get_json() or {}
+    password = data.get("password", "")
+
+    if not password:
+        return jsonify({"success": False, "message": "Password wajib diisi untuk konfirmasi."}), 400
+
+    try:
+        conn = get_db()
+        cur  = conn.cursor()
+
+        # Verifikasi password
+        cur.execute(
+            "SELECT id FROM users WHERE id=%s AND password=%s",
+            (session["user_id"], hash_pwd(password))
+        )
+        if not cur.fetchone():
+            cur.close(); conn.close()
+            return jsonify({"success": False, "message": "Password salah."}), 401
+
+        # Hitung dulu berapa transaksi yang akan dihapus
+        cur.execute(
+            "SELECT COUNT(*) AS total FROM transaksi WHERE user_id=%s",
+            (session["user_id"],)
+        )
+        row   = cur.fetchone()
+        total = row["total"] if row else 0
+
+        # Hapus semua transaksi user
+        cur.execute("DELETE FROM transaksi WHERE user_id=%s", (session["user_id"],))
+        conn.commit()
+        cur.close()
+        conn.close()
+
+    except Exception as e:
+        return jsonify({"success": False, "message": str(e)}), 500
+
+    return jsonify({
+        "success": True,
+        "message": f"{total} riwayat transaksi berhasil dihapus.",
+        "deleted": total,
+    })
+
+
+# ─────────────────────────────────────────────
+# DELETE API — HAPUS TRANSAKSI
+# ─────────────────────────────────────────────
+
+@app.route("/api/transaksi/<trx_id>", methods=["DELETE"])
+@login_required
+def api_hapus_transaksi(trx_id):
+    """
+    DELETE /api/transaksi/<trx_id>
+    Hapus satu riwayat transaksi milik user yang sedang login.
+    Hanya bisa menghapus transaksi milik sendiri.
+    """
+    try:
+        conn = get_db()
+        cur  = conn.cursor()
+
+        # Pastikan transaksi ini milik user yang login
+        cur.execute(
+            "SELECT id FROM transaksi WHERE id=%s AND user_id=%s",
+            (trx_id, session["user_id"])
+        )
+        trx = cur.fetchone()
+
+        if not trx:
+            cur.close(); conn.close()
+            return jsonify({
+                "success": False,
+                "message": "Transaksi tidak ditemukan atau bukan milik Anda."
+            }), 404
+
+        # Hapus transaksi
+        cur.execute("DELETE FROM transaksi WHERE id=%s", (trx_id,))
+        conn.commit()
+        cur.close()
+        conn.close()
+
+    except Exception as e:
+        return jsonify({"success": False, "message": str(e)}), 500
+
+    return jsonify({
+        "success": True,
+        "message": "Riwayat transaksi berhasil dihapus."
+    })
+
+
+# ─────────────────────────────────────────────
+# DELETE API — TUTUP REKENING (HAPUS AKUN)
+# ─────────────────────────────────────────────
+
+@app.route("/api/akun", methods=["DELETE"])
+@login_required
+def api_hapus_akun():
+    """
+    DELETE /api/akun
+    Menutup rekening dan menghapus akun user yang sedang login.
+    Membutuhkan konfirmasi password.
+    Syarat: saldo harus 0 sebelum akun bisa ditutup.
+    """
+    data     = request.get_json() or {}
+    password = data.get("password", "")
+
+    if not password:
+        return jsonify({"success": False, "message": "Password wajib diisi untuk konfirmasi."}), 400
+
+    try:
+        conn = get_db()
+        cur  = conn.cursor()
+
+        # Verifikasi password
+        cur.execute(
+            "SELECT id, saldo FROM users WHERE id=%s AND password=%s",
+            (session["user_id"], hash_pwd(password))
+        )
+        user = cur.fetchone()
+
+        if not user:
+            cur.close(); conn.close()
+            return jsonify({"success": False, "message": "Password salah."}), 401
+
+        # Cek saldo harus 0
+        if float(user["saldo"]) > 0:
+            cur.close(); conn.close()
+            return jsonify({
+                "success": False,
+                "message": f"Saldo masih {fmt_rp(user['saldo'])}. Kosongkan saldo sebelum menutup rekening."
+            }), 400
+
+        # Hapus semua transaksi user (CASCADE seharusnya sudah handle ini)
+        cur.execute("DELETE FROM transaksi WHERE user_id=%s", (session["user_id"],))
+
+        # Hapus akun user
+        cur.execute("DELETE FROM users WHERE id=%s", (session["user_id"],))
+
+        conn.commit()
+        cur.close()
+        conn.close()
+
+        # Hapus session
+        session.clear()
+
+    except Exception as e:
+        return jsonify({"success": False, "message": str(e)}), 500
+
+    return jsonify({
+        "success": True,
+        "message": "Rekening berhasil ditutup. Terima kasih telah menggunakan NusaBank."
+    })
+
+
+# ─────────────────────────────────────────────
 # ENTRYPOINT
 # ─────────────────────────────────────────────
 if __name__ == "__main__":
